@@ -28,11 +28,13 @@ npm install helmet --save
 
 npm install mongoose --save
 
-npm install validator --save
+npm install express-validator --save
 
 npm install jsonwebtoken --save
 
 npm install dotenv --save
+
+npm install bcrypt --save
 
 # MiddleWare
 

@@ -1,32 +1,27 @@
-const express = require('express')
-require('dotenv').config()
-const morgan = require('morgan')
-const helmet = require('helmet')
-const mongoConfig = require('./config/mongoConfig.js')
-const blogsRouter = require('./routes/blogsRouter')
-const usersRouter = require('./routes/userRouter')
-const authRouter = require('./routes/authRouter')
-
-const app = express()
-const PORT = process.env.PORT || 2000
-
+const express = require("express");
+const authrouter = require("./routes/authRouter");
+const blogrouter = require("./routes/blogsRouter");
+const mongoConfig = require("./config/mongoConfig");
+const userRouter = require("./routes/userRouter");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const mongoose = require("mongoose");
+require("dotenv").config();
+const app = express();
 
 //* middleware
-app.use(express.json())
-app.use(morgan('dev'))
-app.use(helmet())
+app.use(express.json());
+app.use(morgan("dev"));
+app.use(helmet());
+const port = process.env.PORT || 2000;
 
 //* Routers
-app.use('/blogs', blogsRouter)
-app.use('/users', usersRouter)
-app.use('/auth', authRouter)
+app.use("/blogpost", blogrouter);
+app.use("/user", userRouter);
+app.use("/auth", authrouter);
 
+app.get("/", (req, res) => {
+  res.send("<h1>Welcome To My Blog!!!</h1>");
+});
 
-app.get('/', (req, res) => {
-    res.status(200).json("Welcome to my API!")
-})
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`);
-    mongoConfig()
-})
+app.listen(process.env.PORT || 2000);
