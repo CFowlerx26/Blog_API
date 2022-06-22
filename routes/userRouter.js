@@ -2,7 +2,7 @@ const express = require("express");
 const UserModel = require("../model/userSchema");
 const bcrypt = require("bcrypt");
 const router = express.Router();
-const middleware = require("../middleware/authmiddleware");
+const jwt = require("jsonwebtoken");
 
 //* --Create User
 
@@ -14,8 +14,8 @@ router.get("/", async (req, res) => {
     console.log(error);
   }
 });
-
-router.get("/:id", middleware, async (req, res) => {
+// Getting User By ID
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -26,6 +26,7 @@ router.get("/:id", middleware, async (req, res) => {
   }
 });
 
+// Creating User
 router.post("/", async (req, res) => {
   const userData = req.body;
   try {
@@ -44,6 +45,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Deleting User
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   try {
