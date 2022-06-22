@@ -20,6 +20,10 @@ app.use("/blogpost", blogrouter);
 app.use("/user", userRouter);
 app.use("/auth", authrouter);
 
+app.get("/", (req, res) => {
+  res.status(200).json("Welcome");
+});
+
 app.listen(PORT, () => {
   console.log(`server running on ${PORT}`);
   mongoConfig();
