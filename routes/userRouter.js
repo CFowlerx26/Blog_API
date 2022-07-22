@@ -1,11 +1,13 @@
 const express = require("express");
 const UserModel = require("../model/userSchema");
+const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const router = express.Router();
 const jwt = require("jsonwebtoken");
 
-//* --Create User
+//* Creating Router
+const router = express.Router();
 
+//* Getting User
 router.get("/", async (req, res) => {
   try {
     const users = await UserModel.find();
@@ -26,22 +28,65 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Creating User
-router.post("/", async (req, res) => {
-  const userData = req.body;
-  try {
-    const userExist = await UserModel.findOne({ email: userData.email });
+//Create or Register a new User
+router.post(
+  "/",
+  [
+    check("username", "Username is required from Middleware!").notEmpty(),
+    check("email", "Please use a valid email from middleware").isEmail(),
+    check("password", "Please enter a password").notEmpty(),
+    check(
+      "password",
+      "Please enter a password with six or more characters."
+    ).isLength({ min: 6 }),
+  ],
+  async (req, res) => {
+    const userData = req.body;
 
-    if (userExist) {
-      return res.json({ msg: "User already exist" });
+    //Checks for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.json(errors.array());
     }
-    const SALT = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash(userData.password, SALT);
-    userData.password = hashedPassword;
-    const user = await UserModel.create(userData);
-    res.status(200).json(user);
+
+    //Write the user to the db
+    try {
+      //checking if there is a user with this email in the db
+      const userExist = await UserModel.findOne({ email: userData.email });
+      //if user exist we return!
+      if (userExist) {
+        return res.json({ msg: "User already exist" });
+      }
+
+      //*========Create a New User
+      // Create the salt
+      const SALT = await bcrypt.genSalt(12);
+      // Use the salt to creat a hash with the user's password
+      const hashedPassword = await bcrypt.hash(userData.password, SALT);
+      // Assign the hashed password to the userData
+      userData.password = hashedPassword;
+      //Write the user to the db
+      const user = await UserModel.create(userData);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).json("You already created one");
+    }
+  }
+);
+
+//Update User By Id
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  newUsersData = req.body;
+  try {
+    //find the user by id
+    const user = await UserModel.findByIdAndUpdate(id, newUsersData, {
+      new: true,
+    });
+    res.status(202).json(user);
+    console.log(user);
   } catch (error) {
-    res.status(400).json("You already created one");
+    console.log(error);
   }
 });
 

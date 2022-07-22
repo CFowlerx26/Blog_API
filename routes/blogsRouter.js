@@ -1,7 +1,9 @@
 const express = require("express");
 const blogModel = require("../model/blogSchema");
-const router = express.Router();
 const middleware = require("../middleware/authmiddleware");
+
+//Create a Router
+const router = express.Router();
 
 //* GET BLOG
 router.get("/", middleware, async (req, res) => {
